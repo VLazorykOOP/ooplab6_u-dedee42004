@@ -1,146 +1,133 @@
-﻿#include "Lab6Example.h"
-#include <iostream>
-namespace SpaceExample1 {
-    ///Задача. Створити дві ієрархії класів без віртуального та з віртуальним спадкуванням, 
-    // з елементами даних класів у кожному класі. Схема успадкування на рисунку за варіантами. 
-    // Створити об’єкти похідних класів з віртуальним та без віртуального успадкуванням. 
-    // Вивести розміри об’єктів даних класів.
-    ///
-    class Base
-    {
-    protected:
-        int dat;
-        double a[5] = { 10,1,7,1,9 };
-    public:
-        Base() : dat(1) {}
-        Base(int d) : dat(d) {}
-    };
-  
-    class D1 : protected Base
-    {
-    protected:
-        int d1;
-    public:
-        D1() : d1(1) {}
-        D1(int d) : d1(d) {}
-        D1(int d, int dt) : Base(dt), d1(d) {}
-    };
+﻿#include <iostream>
+using namespace std;
+//example 1
+class Base {
+protected:
+	int dat;
+	double a[5] = { 9,2,8,1,4 };
+public:
+	Base() : dat(1) {}
+	Base(int d) : dat(d) {}
+};
+class D: protected Base{
+protected:
+	int datd;
+public:
+	D() : datd(1) {}
+	D(int d) : datd(d) {}
+	D(int dat, int datd) : Base(dat),datd(datd) {}
+};
+class D2 :protected D {
+protected:
+	int d2;
+public:
+	D2() : d2(1) {}
+	D2(int d) : d2(d) {}
+	D2(int datd1, int datd2, int d2) : D(datd1,datd2), d2(d2) {}
+};
+class D1 :protected D, protected D2 {
+protected:
+	int d1;
+public:
+	D1() : d1(1) {}
+	D1(int d) : d1(d) {}
+	D1(int datd1,int datd2,int d2a,int d2b,int d2c,int d1) : D(datd1,datd2), D2(d2a,d2b,d2c), d1(d1) {}
+};
+class BD :protected Base, protected D {
+protected:
+	int bd;
+public:
+	BD() : bd(1) {}
+	BD(int d) : bd(d) {}
+	BD(int dat, int b, int c, int d) : Base(dat), D(b,c), bd(d) {}
+};
+class R1 : protected BD {
+protected:
+	int r1;
+public:
+	R1() : r1(1) {}
+	R1(int d) : r1(d) {}
+	R1(int dat, int b, int c, int d, int r1) : BD(dat, b, c, d), r1(r1 + 1.) {}
+};
+class R2 :protected D1,protected D2{
+protected:
+	int r2;
+public:
+	R2() : r2(1) {}
+	R2(int d) : r2(d) {}
+	R2(int datd1, int datd2, int d2a, int d2b, int d2c, int d1,int d1a,int d1b,int d1c, int r2) : D1(datd1, datd2, d2a, d2b, d2c, d1), D2(d1a, d1b, d1c), r2(r2 + 1.) {}
+};
 
-    class D2 : protected Base
-    {
-    protected:
-        double d2;
-    public:
-        D2() : d2(1) {}
-        D2(int d) : d2(d) {}
-        D2(int d, double dt) : Base(d), d2(dt) {}
-    };
+//VIRTUAL
+class DV :virtual protected Base {
+protected:
+	int d1;
+public:
+	DV() : d1(1) {}
+	DV(int d) : d1(d) {}
+	DV(int d, int dt) : Base(d), d1(dt) {}
+};
+class D2V :virtual protected DV {
+protected:
+	int d2v;
+public:
+	D2V() : d2v(1) {}
+	D2V(int d) : d2v(d) {}
+	D2V(int d1,int d2, int dt) : DV(d1,d2), d2v(dt) {}
+};
+class D1V :virtual public DV, virtual protected D2V{
+protected:
+	int d1;
+public:
+	D1V() : d1(1) {}
+	D1V(int d) : d1(d) {}
+	D1V(int datd1, int datd2, int d2a, int d2b, int d2c, int d1) : DV(datd1, datd2), D2V(d2a, d2b, d2c), d1(d1) {}
+};
+class BDV :virtual public DV, virtual public Base {
+protected:
+	int bdv;
+public:
+	BDV() : bdv(1) {}
+	BDV(int d) : bdv(d) {}
+	BDV(int dat, int b, int c, int d) :Base(dat), DV(b, c), bdv(d) {}
+};
+class R1V :virtual protected BDV {
+protected:
+	int r1;
+public:
+	R1V() : r1(1) {}
+	R1V(int d) : r1(d) {}
+	R1V(int dat, int b, int c, int d, int r1) :BDV(dat, b, c, d), r1(r1 + 1.) {}
+	void showDat()
+	{
+		cout << "  bdv =  " << bdv << endl;
+		cout << "BDV::Base::dat =  " << BDV::Base::dat << endl;
+		cout << "BDV::DV::Base::dat =  " << BDV::DV::Base::dat << endl;
+	}
+};
+	class R2V :virtual protected D1V, virtual protected D2V {
+	protected:
+		int r2;
+	public:
+		R2V() : r2(1) {}
+		R2V(int d) : r2(d) {}
+		R2V(int datd1, int datd2, int d2a, int d2b, int d2c, int d1, int d1a, int d1b, int d1c, int r2) : D1V(datd1, datd2, d2a, d2b, d2c, d1), D2V(d1a, d1b, d1c), r2(r2 + 1.) {}
+		void showDat()
+		{
+			cout << "  d1 =  " << d1 << endl;
+			cout << "  d2v =  " << d2v << endl;
+			cout << "D1V::DV::Base::dat =  " << D1V::DV::Base::dat << endl;
+			cout << "D2V::DV::Base::dat =  " << D2V::DV::Base::dat << endl;
+			cout << "D1V::D2V::DV::Base::dat =  " << D1V::D2V::DV::Base::dat << endl;
+		}
+	};
 
-    class D12 : protected D1, protected D2
-    {
-    protected:
-        double dt;
-    public:
-        D12() : dt(1) {}
-        D12(int d) : dt(d) {}
-        D12(int a, int b, int c, double d, int e) : D1(a, b), D2(c, d), dt(e) {}
-    };
+	void MenuExample() {
+		cout << "     Menu Example   \n";
+		cout << "    1   Example 1  \n";
+		cout << "    2   Example 2  \n";
+		cout << "    3   Example 3  \n";
 
-    class R : protected D12, protected Base
-    {
-    protected:
-        double dt;
-    public:
-        R() : dt(1) {}
-        R(int d) : dt(d) {}
-        R(int a, int b, int c, double d, int e) : D12(a, b, c, d, e), Base::Base(a), dt(e + 1.) {}
-        void showDat()
-        {
-            std::cout << "dat =? Error C2385 ambiguous access level dat " << std::endl;
-            /// << dat << std::endl;
-          //  std::cout << "B12VV::D1V::Base::dat =  " << D12::D1::Base::dat << std::endl;
-           // std::cout << "B12VV::D1V::Base::dat =  " << Base::dat << std::endl;
-      //      std::cout << "B12VV::D1V::Base::dat =  " << D12::D2::Base::dat << std::endl;
-        }
-    };
-    
-    //
-    //  virtual
-    //
-    class D1V : virtual protected Base
-    {
-    protected:
-        int d1;
-    public:
-        D1V() : d1(1) {}
-        D1V(int d) : d1(d) {}
-        D1V(int d, int dt) : Base(dt), d1(d) {}
-    };
+		cout << "    4 or e  Exit \n";
 
-    class D2V : virtual protected Base
-    {
-    protected:
-        double d2;
-    public:
-        D2V() : d2(1) {}
-        D2V(int d) : d2(d) {}
-        D2V(int d, double dt) : Base(d), d2(dt) {}
-    };
-
-    class D12VV : virtual protected D1V, virtual public D2V
-    {
-    protected:
-        double dt;
-    public:
-        D12VV() : dt(1) {}
-        D12VV(int d) : dt(d) {}
-        D12VV(int a, int b, int c, double d, int e) : D1V(a, b), D2V(c, d), dt(e) {}
-    };
-
-    class RV3 : virtual protected D12VV, virtual public Base
-    {
-    protected:
-        double dt;
-    public:
-        RV3() : dt(1) {}
-        RV3(int d) : dt(d) {}
-        RV3(int a, int b, int c, double d, int e) : D12VV(a, b, c, d, e), Base::Base(a + 1),
-            dt(e + 1.0) {}
-        void showDat()
-        {
-            std::cout << "  dat =  " << dat << std::endl;
-            std::cout << "B12VV::D1V::Base::dat =  " << D12VV::D1V::Base::dat << std::endl;
-            std::cout << "B12VV::D1V::Base::dat =  " << Base::dat << std::endl;
-            std::cout << "B12VV::D1V::Base::dat =  " << D12VV::D2V::Base::dat << std::endl;
-        }
-    };
-
-    int mainExample1()
-    {
-        std::cout << " Example1  \n";
-        R a, b(1, 2, 3, 4.5, 5);
-        RV3 av, bv(1, 2, 3, 4.5, 5);
-
-        std::cout << "Test !\n";
-        std::cout << "Size for Base " << sizeof(Base) << std::endl;
-        std::cout << "Size for D1 " << sizeof(D1) << std::endl;
-        std::cout << "Size for D2 " << sizeof(D2) << std::endl;
-        std::cout << "Size for D12 " << sizeof(D12) << std::endl;
-        std::cout << "Size for R " << sizeof(R) << std::endl;
-
-        std::cout << "Size for Base " << sizeof(Base) << std::endl;
-        std::cout << "Size for D1V " << sizeof(D1V) << std::endl;
-        std::cout << "Size for D2V " << sizeof(D2V) << std::endl;
-        std::cout << "Size for D12VV " << sizeof(D12VV) << std::endl;
-        std::cout << "Size for RV3 " << sizeof(RV3) << std::endl;
-
-        std::cout << "Size for object class R " << sizeof(R) << " or  "
-            << sizeof(a) << " or  " << sizeof(b) << std::endl;
-        std::cout << "Size for object class RV3 " << sizeof(RV3) << " or  "
-            << sizeof(av) << " or  " << sizeof(bv) << std::endl;
-        b.showDat();
-        bv.showDat();
-        return 0;
-    }
-
-}
+	}
